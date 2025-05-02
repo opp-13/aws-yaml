@@ -22,16 +22,18 @@ vpc:
   subnets:
     private:
       ap-northeast-2a:
-        id: "subnet-02293de5a670688bf"
+        id: $PRIVATE_SUBNET_1_ID
       ap-northeast-2a-db:
-        id: "subnet-0b6e3609dc1a94b6e" 
+        id: $PRIVATE_DB_SUBNET_1_ID
       ap-northeast-2c:
-        id: "subnet-04158f45c7c1db7e8"
+        id: $PRIVATE_SUBNET_2_ID
       ap-northeast-2c-db:
-        id: "subnet-0550896ef26c073ff"
+        id: $PRIVATE_DB_SUBNET_2_ID
 
 managedNodeGroups:
   - name: mypcng
+    labels:
+      area: web
     instanceType: t3.small
     desiredCapacity: 2
     minSize: 2
@@ -53,6 +55,8 @@ managedNodeGroups:
       - ap-northeast-2c
 
   - name: mydb
+    labels:
+      area: was
     instanceType: t3.small
     desiredCapacity: 2
     minSize: 2
