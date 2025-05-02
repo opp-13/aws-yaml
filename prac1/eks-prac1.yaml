@@ -21,13 +21,13 @@ vpc:
   id:
   subnets:
     private:
-      ap-northeast-2a:
+      web-a:
         id: $PRIVATE_SUBNET_1_ID
-      ap-northeast-2a-db:
+      was-a:
         id: $PRIVATE_DB_SUBNET_1_ID
-      ap-northeast-2c:
+      web-c:
         id: $PRIVATE_SUBNET_2_ID
-      ap-northeast-2c-db:
+      was-c:
         id: $PRIVATE_DB_SUBNET_2_ID
 
 managedNodeGroups:
@@ -51,8 +51,8 @@ managedNodeGroups:
     tags:
       eksctl.io/nodegroup-name: "mypcng"
     subnets:
-      - ap-northeast-2a
-      - ap-northeast-2c
+      - web-a:
+      - web-a:
 
   - name: mydb
     labels:
@@ -74,6 +74,6 @@ managedNodeGroups:
     tags:
       eksctl.io/nodegroup-name: "mydb"
     subnets:
-      - ap-northeast-2a-db
-      - ap-northeast-2c-db
+      - was-a:
+      - was-c:
 
