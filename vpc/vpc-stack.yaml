@@ -14,7 +14,7 @@ Resources:
       EnableDnsHostnames: true
       Tags:
         - Key: Name
-          Value: eks-vpc
+          Value: eks-vpc-stack
 
   InternetGateway:
     Type: 'AWS::EC2::InternetGateway'
