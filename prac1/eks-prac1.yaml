@@ -51,8 +51,8 @@ managedNodeGroups:
     tags:
       eksctl.io/nodegroup-name: "mypcng"
     subnets:
-      - web-a:
-      - web-a:
+      - web-a
+      - web-c
 
   - name: mydb
     labels:
@@ -74,6 +74,6 @@ managedNodeGroups:
     tags:
       eksctl.io/nodegroup-name: "mydb"
     subnets:
-      - was-a:
-      - was-c:
+      - was-a
+      - was-c
 
