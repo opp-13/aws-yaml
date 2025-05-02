@@ -12,6 +12,10 @@ export PRIVATE_SUBNET_2_ID=$(echo $outputs | jq -r '.[] | select(.OutputKey=="Pr
 export PRIVATE_DB_SUBNET_1_ID=$(echo $outputs | jq -r '.[] | select(.OutputKey=="PrivateSubnetDB1Id").OutputValue')
 export PRIVATE_DB_SUBNET_2_ID=$(echo $outputs | jq -r '.[] | select(.OutputKey=="PrivateSubnetDB2Id").OutputValue')
 
+export CLUSTER_NAME="eks-cluster-prac1"
+export ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+
+
 # 결과 출력
 echo "VPC_STACK: $VPC_STACK"
 echo "VPC_ID: $VPC_ID"
@@ -20,4 +24,30 @@ echo "PRIVATE_SUBNET_2_ID (AZ-c): $PRIVATE_SUBNET_2_ID"
 echo "PRIVATE_DB_SUBNET_1_ID (AZ-d): $PRIVATE_DB_SUBNET_1_ID"
 echo "PRIVATE_DB_SUBNET_2_ID (AZ-d): $PRIVATE_DB_SUBNET_2_ID"
 
+
 envsubst < eks-prac1.yaml > eks-prac-env-add.yaml
+
+eksctl create cluster -f eks-prac-env-add.yaml
+
+echo "Cluster Creation Complete!"
+
+echo "Setting alb Configuration"
+Sleep(3);
+
+eksctl create iamserviceaccount  \
+    --cluster=$CLUSTER_NAME \
+    --namespace=kube-system \
+    --name=aws-load-balancer-controller \
+    --role-name AmazonEKSLoadBalancerControllerRole \
+    --attach-policy-arn=arn:aws:iam::$ACCOUNT_ID:policy/AWSLoadBalancerControllerIAMPolicy \
+    --override-existing-serviceaccounts \
+    --approve
+
+helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
+	-n kube-system \
+	--set clusterName=$CLUSTER_NAME \
+	--set serviceAccount.create=false \
+	--set serviceAccount.name=aws-load-balancer-controller \
+	--set image.repository=602401143452.dkr.ecr.ap-northeast-2.amazonaws.com/amazon/aws-load-balancer-controller \
+	--set region=ap-northeast-2 \
+	--set vpcId=$VPC_ID
