@@ -1,6 +1,6 @@
-#! /bin/bash
+#!/bin/bash
 
-VPC_STACK="eks-vpc-stack"
+export VPC_STACK="eks-vpc-stack"
 
 # Stack outputs 가져오기
 outputs=$(aws cloudformation describe-stacks --stack-name $VPC_STACK --query "Stacks[0].Outputs" --output json)
