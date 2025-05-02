@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tomcat-dbtest
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tomcat-dbtest
+  template:
+    metadata:
+      labels:
+        app: tomcat-dbtest
+    spec:
+      containers:
+      - name: tomcat
+        image: 760135347993.dkr.ecr.ap-northeast-2.amazonaws.com/prac1/tomcat:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: DB_URL
+          valueFrom:
+            secretKeyRef:
+              name: db-secret
+              key: DB_URL
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: db-secret
+              key: DB_USER
+        - name: DB_PASS
+          valueFrom:
+            secretKeyRef:
+              name: db-secret
+              key: DB_PASS
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: tomcat-service
+spec:
+  type: ClusterIP
+  selector:
+    app: tomcat-dbtest
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080 
+
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tomcat-ingress
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internal
+    alb.ingress.kubernetes.io/target-type: ip
+spec:
+  ingressClassName: alb
+  rules:
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: tomcat-service
+            port: 
+              number: 80 
+
+---
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: db-secret
+type: Opaque
+data:
+  DB_URL: 
+  DB_USER: 
+  DB_PASS: 
